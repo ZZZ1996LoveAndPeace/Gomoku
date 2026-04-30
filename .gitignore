@@ -1,0 +1,18 @@
+# Build outputs
+bin/
+obj/
+build-check/
+build-check-final/
+
+# IDE/user files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Codex local session state
+.codex/
+
+# OS files
+Thumbs.db
+Desktop.ini
