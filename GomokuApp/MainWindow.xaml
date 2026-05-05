@@ -4,13 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="五子棋对战"
-        Width="1180"
+        Title="经典小游戏中心"
+        Width="1240"
         Height="760"
-        MinWidth="1080"
+        MinWidth="1120"
         MinHeight="720"
         Background="#F4EFE7"
-        FontFamily="Microsoft YaHei UI">
+        FontFamily="Microsoft YaHei UI"
+        KeyDown="Window_OnKeyDown">
     <Grid Margin="22">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="680" />
@@ -32,30 +33,64 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel>
-                    <TextBlock FontSize="28"
+                    <TextBlock x:Name="GameTitleTextBlock"
+                               FontSize="28"
                                FontWeight="SemiBold"
                                Foreground="#2C241A"
                                Text="五子棋" />
-                    <TextBlock Margin="0,6,0,0"
+                    <TextBlock x:Name="GameSubtitleTextBlock"
+                               Margin="0,6,0,0"
                                FontSize="14"
                                Foreground="#6B5B45"
                                Text="支持从空局开始对战，也支持手动摆残局后指定 AI 执黑或执白继续下。" />
                 </StackPanel>
 
-                <Viewbox Grid.Row="1" Stretch="Uniform">
-                    <Border Padding="18"
-                            Background="#EBC37A"
-                            CornerRadius="18"
-                            BorderBrush="#C79746"
-                            BorderThickness="1.5"
-                            SnapsToDevicePixels="True">
-                        <Canvas x:Name="BoardCanvas"
-                                Width="580"
-                                Height="580"
-                                Background="#E6BE74"
-                                MouseLeftButtonDown="BoardCanvas_OnMouseLeftButtonDown" />
-                    </Border>
-                </Viewbox>
+                <Grid Grid.Row="1">
+                    <Viewbox x:Name="GomokuBoardViewbox" Stretch="Uniform">
+                        <Border Padding="18"
+                                Background="#EBC37A"
+                                CornerRadius="18"
+                                BorderBrush="#C79746"
+                                BorderThickness="1.5"
+                                SnapsToDevicePixels="True">
+                            <Canvas x:Name="BoardCanvas"
+                                    Width="580"
+                                    Height="580"
+                                    Background="#E6BE74"
+                                    MouseLeftButtonDown="BoardCanvas_OnMouseLeftButtonDown" />
+                        </Border>
+                    </Viewbox>
+
+                    <Viewbox x:Name="MinesweeperBoardViewbox"
+                             Stretch="Uniform"
+                             Visibility="Collapsed">
+                        <Border Padding="14"
+                                Background="#D7DEE2"
+                                CornerRadius="14"
+                                BorderBrush="#8EA1AB"
+                                BorderThickness="1.5"
+                                SnapsToDevicePixels="True">
+                            <UniformGrid x:Name="MinesweeperGrid"
+                                         Width="580"
+                                         Height="580" />
+                        </Border>
+                    </Viewbox>
+
+                    <Viewbox x:Name="SudokuBoardViewbox"
+                             Stretch="Uniform"
+                             Visibility="Collapsed">
+                        <Border Padding="14"
+                                Background="#EEF0E8"
+                                CornerRadius="14"
+                                BorderBrush="#9EA78F"
+                                BorderThickness="1.5"
+                                SnapsToDevicePixels="True">
+                            <Grid x:Name="SudokuGrid"
+                                  Width="580"
+                                  Height="580" />
+                        </Border>
+                    </Viewbox>
+                </Grid>
 
                 <Border Grid.Row="2"
                         Margin="0,18,0,0"
@@ -85,9 +120,29 @@
                     <TextBlock Margin="0,8,0,0"
                                FontSize="13"
                                Foreground="#B8C5BE"
-                               Text="首版为自由规则。大师模式会更慢一些，但会做更深的防守和进攻搜索。" />
+                               Text="选择游戏后开始一局；每个游戏保持自己的规则和节奏。" />
 
                     <Border Margin="0,22,0,0"
+                            Padding="18"
+                            Background="#263638"
+                            CornerRadius="20">
+                        <StackPanel>
+                            <TextBlock FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F8F3EB"
+                                       Text="游戏" />
+                            <ComboBox x:Name="GameCombo"
+                                      Margin="0,12,0,0"
+                                      SelectionChanged="GameCombo_OnSelectionChanged">
+                                <ComboBoxItem Tag="Gomoku">五子棋</ComboBoxItem>
+                                <ComboBoxItem Tag="Minesweeper">扫雷</ComboBoxItem>
+                                <ComboBoxItem Tag="Sudoku">数独</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="GomokuControlsPanel"
+                            Margin="0,18,0,0"
                             Padding="18"
                             Background="#263638"
                             CornerRadius="20">
@@ -137,7 +192,8 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Margin="0,18,0,0"
+                    <Border x:Name="GomokuSetupPanel"
+                            Margin="0,18,0,0"
                             Padding="18"
                             Background="#304447"
                             CornerRadius="20">
@@ -191,6 +247,153 @@
                                     Padding="12,10"
                                     Click="StartFromPositionButton_OnClick"
                                     Content="从当前残局开始对战" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="MinesweeperControlsPanel"
+                            Margin="0,18,0,0"
+                            Padding="18"
+                            Background="#263638"
+                            CornerRadius="20"
+                            Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F8F3EB"
+                                       Text="扫雷" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Foreground="#BFD0CA"
+                                       Text="难度" />
+                            <ComboBox x:Name="MinesweeperDifficultyCombo"
+                                      Margin="0,8,0,0"
+                                      SelectionChanged="MinesweeperDifficultyCombo_OnSelectionChanged" />
+                            <Button Margin="0,16,0,0"
+                                    Padding="12,10"
+                                    Click="NewMinesweeperButton_OnClick"
+                                    Content="新局" />
+
+                            <Grid Margin="0,18,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0"
+                                        Padding="12"
+                                        Background="#304447"
+                                        CornerRadius="12">
+                                    <StackPanel>
+                                        <TextBlock Foreground="#BFD0CA"
+                                                   Text="剩余雷" />
+                                        <TextBlock x:Name="MinesRemainingTextBlock"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="24"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#F8F3EB" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2"
+                                        Padding="12"
+                                        Background="#304447"
+                                        CornerRadius="12">
+                                    <StackPanel>
+                                        <TextBlock Foreground="#BFD0CA"
+                                                   Text="用时" />
+                                        <TextBlock x:Name="MinesweeperTimerTextBlock"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="24"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#F8F3EB" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border x:Name="SudokuControlsPanel"
+                            Margin="0,18,0,0"
+                            Padding="18"
+                            Background="#263638"
+                            CornerRadius="20"
+                            Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#F8F3EB"
+                                       Text="数独" />
+                            <TextBlock Margin="0,12,0,0"
+                                       Foreground="#BFD0CA"
+                                       Text="难度" />
+                            <ComboBox x:Name="SudokuDifficultyCombo"
+                                      Margin="0,8,0,0"
+                                      SelectionChanged="SudokuDifficultyCombo_OnSelectionChanged" />
+
+                            <Button Margin="0,16,0,0"
+                                    Padding="12,10"
+                                    Click="NewSudokuButton_OnClick"
+                                    Content="新局" />
+
+                            <ToggleButton x:Name="SudokuNoteModeButton"
+                                          Margin="0,10,0,0"
+                                          Padding="12,10"
+                                          Click="SudokuNoteModeButton_OnClick"
+                                          Content="笔记模式" />
+
+                            <UniformGrid x:Name="SudokuNumberPad"
+                                         Margin="0,16,0,0"
+                                         Columns="3" />
+
+                            <Grid Margin="0,14,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0"
+                                        Padding="12,10"
+                                        Click="ClearSudokuCellButton_OnClick"
+                                        Content="清除" />
+                                <Button Grid.Column="2"
+                                        Padding="12,10"
+                                        Click="SudokuHintButton_OnClick"
+                                        Content="提示" />
+                            </Grid>
+
+                            <Grid Margin="0,18,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0"
+                                        Padding="12"
+                                        Background="#304447"
+                                        CornerRadius="12">
+                                    <StackPanel>
+                                        <TextBlock Foreground="#BFD0CA"
+                                                   Text="错误" />
+                                        <TextBlock x:Name="SudokuMistakesTextBlock"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="24"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#F8F3EB" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2"
+                                        Padding="12"
+                                        Background="#304447"
+                                        CornerRadius="12">
+                                    <StackPanel>
+                                        <TextBlock Foreground="#BFD0CA"
+                                                   Text="用时" />
+                                        <TextBlock x:Name="SudokuTimerTextBlock"
+                                                   Margin="0,6,0,0"
+                                                   FontSize="24"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#F8F3EB" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>

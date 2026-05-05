@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GomokuApp", "GomokuApp\GomokuApp.csproj", "{AA963E83-3958-0511-C731-6C9D58242D12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GomokuApp.Tests", "GomokuApp.Tests\GomokuApp.Tests.csproj", "{C9CA80AB-CE84-41C6-8C59-C9A6E98FB66F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{AA963E83-3958-0511-C731-6C9D58242D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA963E83-3958-0511-C731-6C9D58242D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA963E83-3958-0511-C731-6C9D58242D12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9CA80AB-CE84-41C6-8C59-C9A6E98FB66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CA80AB-CE84-41C6-8C59-C9A6E98FB66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CA80AB-CE84-41C6-8C59-C9A6E98FB66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CA80AB-CE84-41C6-8C59-C9A6E98FB66F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
